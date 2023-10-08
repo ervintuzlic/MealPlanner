@@ -30,5 +30,7 @@ public class AuthorizationDataService : IAuthorizationDataService
         {
             throw new Exception("Not registered");
         }
+
+        //Testing commit
     }
 }
