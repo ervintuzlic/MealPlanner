@@ -1,31 +1,41 @@
 ﻿@inherits LayoutComponentBase
 
-<div id="app" style="height:100%">
 <RadzenLayout style="height: 100%">
     <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" Gap="0">
             <RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
-            <RadzenLabel Text="Header" />
+            <RadzenLabel Text="WeeklyMeal" />
+            <RadzenStack class="rz-mr-6" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="10">
+                <RadzenButton Style="float:right;" Click="args => RedirectToLogin()">Login</RadzenButton>
+                <RadzenButton Variant="Variant.Outlined" Click="args => RedirectToRegister()">Register</RadzenButton>
+            </RadzenStack>
         </RadzenStack>
+
     </RadzenHeader>
-    <RadzenSidebar Style="width:auto;height:100%">
-        <RadzenPanelMenu DisplayStyle="@(sidebar1Expanded?MenuItemDisplayStyle.IconAndText:MenuItemDisplayStyle.Icon)" ShowArrow=false>
-            <RadzenPanelMenuItem Text="Overview" Icon="home" />
-            <RadzenPanelMenuItem Text="Dashboard" Icon="dashboard" />
-            <RadzenPanelMenuItem Text="UI Fundamentals" Icon="auto_awesome">
-                <RadzenPanelMenuItem Text="Themes" Icon="color_lens" />
-                <RadzenPanelMenuItem Text="Colors" Icon="invert_colors" />
-            </RadzenPanelMenuItem>
+    <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Home" Icon="home" />
+            <RadzenPanelMenuItem Text="Users" Icon="account_box" />
         </RadzenPanelMenu>
+        <div class="rz-p-4">
+            Sidebar
+        </div>
     </RadzenSidebar>
     <RadzenBody>
         <div class="rz-p-4">
-            Body
+            @Body
         </div>
     </RadzenBody>
 </RadzenLayout>
-</div>
 
 @code {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+
     bool sidebar1Expanded = true;
+
+
+    private void RedirectToLogin() => NavigationManager.NavigateTo("/login");
+    private void RedirectToRegister() => NavigationManager.NavigateTo("/register");
+
 }

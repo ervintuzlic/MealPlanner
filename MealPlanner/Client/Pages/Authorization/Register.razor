@@ -1,0 +1,65 @@
+﻿@using MealPlanner.Shared.DTO.Authorization;
+@page "/register"
+
+<div>
+    <RadzenCard Class="rz-my-12 rz-mx-auto" Style="max-width: 480px">
+        <RadzenFieldset Class="rz-mt-4 rz-mb-4 rz-pb-2">
+            <HeaderTemplate>
+                <span style="font-size:16px;" class="d-inline-flex align-items-center align-middle">
+                    <RadzenIcon Icon="account_box" class="me-1" /><b>Register</b>
+                </span>
+            </HeaderTemplate>
+            <ChildContent>
+                <RadzenTemplateForm TItem="RegisterRequest" Data="@RegisterRequest" Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+                    <RadzenStack Gap="20" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+                        <RadzenFormField Text="Email" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="@RegisterRequest.Email" />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Text="Username" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="@RegisterRequest.Username" />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Text="Date Of birth" Variant="Variant.Outlined">
+                            <RadzenDatePicker DateFormat="d" Style="width:100%" @bind-Value="@RegisterRequest.DateOfBirth" />
+                        </RadzenFormField>
+                        <RadzenFormField Text="Password" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenColumn>
+                                    <RadzenTextBox Name="Password" @bind-Value="@RegisterRequest.Password" Visible="@(!PasswordVisible)" Style="display:block;width:100%;" />
+                                    <RadzenPassword Name="Password" @bind-Value="@RegisterRequest.Password" Visible="@PasswordVisible" Style="display:block;width:100%;" />
+                                    <RadzenRequiredValidator Component="Password" Popup="false" Style="position: absolute; font-weight:bold;" />
+                                </RadzenColumn>
+                            </ChildContent>
+                            <End>
+                                <RadzenButton Icon="@(PasswordVisible ? "visibility" : "visibility_off")" Click="TogglePassword" Variant="Variant.Text" Size="ButtonSize.Small" />
+                            </End>
+                        </RadzenFormField>
+                        <RadzenFormField Text="Confirm Password" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenColumn>
+                                    <RadzenTextBox Name="RepeatPassword" @bind-Value="@ConfirmedPassword" Visible="@(!ConfirmedPasswordVisible)" Style="display:block;width:100%;" />
+                                    <RadzenPassword Name="RepeatPassword" @bind-Value="@ConfirmedPassword" Visible="@ConfirmedPasswordVisible" Style="display:block; width:100%;" />
+                                    <RadzenRequiredValidator Component="RepeatPassword" Text="Enter password" Popup="false" Style="position: absolute; font-weight:bold;" />
+                                    <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(ConfirmedPassword)) Value=@RegisterRequest.Password Component="RepeatPassword" Text="Passwords should be the same" Popup="false" Style="position: absolute; font-weight:bold;" />
+                                </RadzenColumn>
+                            </ChildContent>
+                            <End>
+                                <RadzenButton Icon="@(ConfirmedPasswordVisible ? "visibility" : "visibility_off")" Click="ToogleConfirmedPassword" Variant="Variant.Text" Size="ButtonSize.Small" />
+                            </End>
+                        </RadzenFormField>
+                    </RadzenStack>
+                    <RadzenStack Orientation="Orientation.Horizontal" Class="rz-mt-8" JustifyContent="JustifyContent.Center" Gap="0">
+                        <RadzenButton class="w-100" style="height:40px;" ButtonType="ButtonType.Submit" Text="Register" />
+                    </RadzenStack>
+                </RadzenTemplateForm>
+            </ChildContent>
+        </RadzenFieldset>
+
+        <RadzenStack JustifyContent="JustifyContent.Center" Orientation="Orientation.Horizontal" Gap="6">
+            <span>Already have an account? </span><RadzenLink Match="NavLinkMatch.All" Path="/login">Login</RadzenLink>
+        </RadzenStack>
+    </RadzenCard>
+</div>

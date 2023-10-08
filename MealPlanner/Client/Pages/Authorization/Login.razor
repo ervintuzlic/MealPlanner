@@ -1,6 +1,44 @@
-﻿@page "/login"
+﻿@using MealPlanner.Shared.DTO.Authorization;
+@page "/login"
 
 <div>
-    <RadzenButton>Login</RadzenButton>
+    <RadzenCard Class="rz-my-12 rz-mx-auto" Style="max-width: 480px">
+        <RadzenFieldset Class="rz-mt-4 rz-mb-4 rz-pb-2">
+            <HeaderTemplate>
+                <span style="font-size:16px;" class="d-inline-flex align-items-center align-middle">
+                    <RadzenIcon Icon="account_box" class="me-1" /><b>Login</b>
+                </span>
+            </HeaderTemplate>
+            <ChildContent>
+                <RadzenTemplateForm TItem="LoginRequest" Data="@LoginRequest" Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+                    <RadzenStack Gap="20" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center">
+                        <RadzenFormField Text="Email" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenTextBox @bind-Value="@LoginRequest.Email" />
+                            </ChildContent>
+                        </RadzenFormField>
+                        <RadzenFormField Text="Password" Variant="Variant.Outlined">
+                            <ChildContent>
+                                <RadzenColumn>
+                                    <RadzenTextBox Name="Password" @bind-Value="@LoginRequest.Password" Visible="@(!PasswordVisible)" Style="display:block;width:100%;" />
+                                    <RadzenPassword Name="Password" @bind-Value="@LoginRequest.Password" Visible="@PasswordVisible" Style="display:block;width:100%;" />
+                                    <RadzenRequiredValidator Component="Password" Popup="false" Style="position: absolute; font-weight:bold;" />
+                                </RadzenColumn>
+                            </ChildContent>
+                            <End>
+                                <RadzenButton Icon="@(PasswordVisible ? "visibility" : "visibility_off")" Click="TogglePassword" Variant="Variant.Text" Size="ButtonSize.Small" />
+                            </End>
+                        </RadzenFormField>
+                    </RadzenStack>
+                    <RadzenStack Orientation="Orientation.Horizontal" Class="rz-mt-8" JustifyContent="JustifyContent.Center" Gap="0">
+                        <RadzenButton class="w-100" style="height:40px;" ButtonType="ButtonType.Submit" Text="Login" />
+                    </RadzenStack>
+                </RadzenTemplateForm>
+            </ChildContent>
+        </RadzenFieldset>
 
+        <RadzenStack JustifyContent="JustifyContent.Center" Orientation="Orientation.Horizontal" Gap="6">
+            <span>Don't have an account? </span><RadzenLink Match="NavLinkMatch.All" Path="/login">Register</RadzenLink>
+        </RadzenStack>
+    </RadzenCard>
 </div>

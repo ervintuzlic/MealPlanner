@@ -8,4 +8,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+var ioc = new DependencyInjector();
+ioc.RegisterServices(builder.Services);
+
 await builder.Build().RunAsync();
