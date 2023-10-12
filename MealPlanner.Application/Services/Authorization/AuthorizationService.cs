@@ -4,13 +4,19 @@ using MealPlanner.Infrastructure.Extensions;
 using MealPlanner.Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
 using MealPlanner.Application.Data;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace MealPlanner.Application.Services.Authorization;
 
 public class AuthorizationService : IAuthorizationService
 {
-    private ApplicationDbContext _appContext { get; set; }
-    private UserManager<ApplicationUser> _userManager { get; set; }
+    private readonly ApplicationDbContext _appContext;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public AuthorizationService(UserManager<ApplicationUser> userManager, ApplicationDbContext appContext)
     {
@@ -63,6 +69,19 @@ public class AuthorizationService : IAuthorizationService
         }
 
         return null;
+    }
+
+    public ApplicationUser? CheckIfUserExists(string cookie)
+    {
+        var user = _userManager.Users
+            .FirstOrDefault(x => x.SecurityStamp == cookie);
+
+        if(user == null)
+        {
+            return null;
+        }
+
+        return user;
     }
 
     public async Task<ApplicationUser?> Register(RegisterRequest request)
@@ -132,7 +151,4 @@ public class AuthorizationService : IAuthorizationService
 
         return hashedPassword;
     }
-
-
-
 }
