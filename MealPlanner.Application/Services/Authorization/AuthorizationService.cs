@@ -4,18 +4,21 @@ using MealPlanner.Infrastructure.Extensions;
 using MealPlanner.Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
 using MealPlanner.Application.Data;
+using MealPlanner.Common.Authorization;
 
 namespace MealPlanner.Application.Services.Authorization;
 
 public class AuthorizationService : IAuthorizationService
 {
-    private ApplicationDbContext _appContext { get; set; }
-    private UserManager<ApplicationUser> _userManager { get; set; }
+    private readonly ApplicationDbContext _appContext;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AuthorizationService(UserManager<ApplicationUser> userManager, ApplicationDbContext appContext)
+    public AuthorizationService(UserManager<ApplicationUser> userManager, ApplicationDbContext appContext, RoleManager<IdentityRole> roleManager)
     {
         _appContext = appContext;
         _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<ApplicationUser?> Login(LoginRequest request)
@@ -65,6 +68,19 @@ public class AuthorizationService : IAuthorizationService
         return null;
     }
 
+    public ApplicationUser? CheckIfUserExists(string cookie)
+    {
+        var user = _userManager.Users
+            .FirstOrDefault(x => x.SecurityStamp == cookie);
+
+        if(user == null)
+        {
+            return null;
+        }
+
+        return user;
+    }
+
     public async Task<ApplicationUser?> Register(RegisterRequest request)
     {
         if (request == null)
@@ -111,6 +127,7 @@ public class AuthorizationService : IAuthorizationService
             };
 
             await _userManager.CreateAsync(user);
+            await _userManager.AddToRoleAsync(user, AuthorizationRoles.Free);
 
             await _appContext.SaveChangesAsync();
 
@@ -132,7 +149,4 @@ public class AuthorizationService : IAuthorizationService
 
         return hashedPassword;
     }
-
-
-
 }

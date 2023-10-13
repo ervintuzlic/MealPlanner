@@ -4,7 +4,9 @@ namespace MealPlanner.Client.DataServices.AuthorizationDataService;
 
 public interface IAuthorizationDataService
 {
-    Task Login(LoginRequest request);
+    Task<string> Login(LoginRequest request);
 
     Task Register(RegisterRequest request);
+
+    Task Logout();
 }

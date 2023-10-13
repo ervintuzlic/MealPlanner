@@ -8,4 +8,6 @@ public interface IAuthorizationService
     Task<ApplicationUser?> Login(LoginRequest request);
 
     Task<ApplicationUser?> Register(RegisterRequest request);
+
+    ApplicationUser? CheckIfUserExists(string cookie);
 }

@@ -1,12 +1,38 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿@using MealPlanner.Common.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization
+<CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    <NotAuthorized>
+                        @if (!context.User.Claims.Any())
+                        {
+                            <MealPlanner.Client.Pages.Authorization.LoginComponent></MealPlanner.Client.Pages.Authorization.LoginComponent>
+                        }
+                        else if(IsFree(context))
+                        {
+                            <MealPlanner.Client.Shared.NonAuthorizedComponents.NonAuthorizedFreeComponent></MealPlanner.Client.Shared.NonAuthorizedComponents.NonAuthorizedFreeComponent>
+                        }
+                        else
+                        {
+                            <PageTitle>Something went wrong</PageTitle>
+                        }
+                    </NotAuthorized>
+                </AuthorizeRouteView>
+            </Found>
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p role="alert">Sorry, there's nothing at this address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+</CascadingAuthenticationState>
+
+@code{
+    private bool IsFree(AuthenticationState state) => state.User.Claims
+        .Where(x => x.Type == AuthorizationPolicyRegistration.AuthorizationClaimType)
+        .FirstOrDefault()?.Value == AuthorizationRoles.Free;
+
+}

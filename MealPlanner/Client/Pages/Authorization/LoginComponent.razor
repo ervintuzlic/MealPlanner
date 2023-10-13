@@ -1,6 +1,4 @@
 ﻿@using MealPlanner.Shared.DTO.Authorization;
-@page "/login"
-
 <div>
     <RadzenCard Class="rz-my-12 rz-mx-auto" Style="max-width: 480px">
         <RadzenFieldset Class="rz-mt-4 rz-mb-4 rz-pb-2">
@@ -28,6 +26,10 @@
                             <End>
                                 <RadzenButton Icon="@(PasswordVisible ? "visibility" : "visibility_off")" Click="TogglePassword" Variant="Variant.Text" Size="ButtonSize.Small" />
                             </End>
+                        </RadzenFormField>
+                        <RadzenFormField>
+                            <RadzenCheckBox @bind-Value=@LoginRequest.RememberMe Name="RememberMe" />
+                            <RadzenLabel Text="Remember me" Component="RememberMe"></RadzenLabel>
                         </RadzenFormField>
                     </RadzenStack>
                     <RadzenStack Orientation="Orientation.Horizontal" Class="rz-mt-8" JustifyContent="JustifyContent.Center" Gap="0">

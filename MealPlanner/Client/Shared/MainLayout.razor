@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using MealPlanner.Client.DataServices.AuthorizationDataService;
+@using MealPlanner.Client.Providers;
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims;
+@inherits LayoutComponentBase
 
 <RadzenLayout style="height: 100%">
     <RadzenHeader>
@@ -6,16 +10,25 @@
             <RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
             <RadzenLabel Text="WeeklyMeal" />
             <RadzenStack class="rz-mr-6" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="10">
-                <RadzenButton Style="float:right;" Click="args => RedirectToLogin()">Login</RadzenButton>
-                <RadzenButton Variant="Variant.Outlined" Click="args => RedirectToRegister()">Register</RadzenButton>
+                <AuthorizeView>
+                    <Authorized>
+                        <RadzenLabel>Hello, @context.User.Identity!.Name</RadzenLabel>
+                        <RadzenButton Variant="Variant.Outlined" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Dark" Click="args => Logout()">Logout</RadzenButton>
+                    </Authorized>
+                    <NotAuthorized>
+                        <RadzenButton Style="float:right;" Click="args => RedirectToLogin()">Login</RadzenButton>
+                        <RadzenButton Variant="Variant.Outlined" Click="args => RedirectToRegister()">Register</RadzenButton>
+                    </NotAuthorized>
+                </AuthorizeView>
+
             </RadzenStack>
         </RadzenStack>
 
     </RadzenHeader>
     <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
         <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Icon="home" />
-            <RadzenPanelMenuItem Text="Users" Icon="account_box" />
+            <RadzenPanelMenuItem Text="Home" Icon="home" Click="args => RedirectToHome()" />
+            <RadzenPanelMenuItem Text="Users" Icon="account_box" Click="args => RedirectToCounter()" />
         </RadzenPanelMenu>
         <div class="rz-p-4">
             Sidebar
@@ -32,10 +45,24 @@
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
 
+    [Inject]
+    private IAuthorizationDataService AuthorizationDataService { get; set; } = default!;
+
+    [Inject]
+    private JwtAuthenticationStateProvider JwtAuthenticationStateProvider { get; set; } = default!;
+
     bool sidebar1Expanded = true;
 
 
     private void RedirectToLogin() => NavigationManager.NavigateTo("/login");
     private void RedirectToRegister() => NavigationManager.NavigateTo("/register");
+    private void RedirectToCounter() => NavigationManager.NavigateTo("/counter");
+    private void RedirectToHome() => NavigationManager.NavigateTo("/");
+
+    private async void Logout()
+    {
+        await AuthorizationDataService.Logout();
+        JwtAuthenticationStateProvider.Logout();
+    }
 
 }

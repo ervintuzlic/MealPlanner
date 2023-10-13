@@ -1,0 +1,21 @@
+﻿ @page "/counter"
+
+@using MealPlanner.Common.Authorization;
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize(AuthorizationRoles.Counter)]
+
+<h3>Counter</h3>
+
+Counter: @Number
+
+<RadzenButton Click="args => HandleClick()">Click</RadzenButton>
+
+@code {
+    private int Number { get; set; }
+
+    private void HandleClick()
+    {
+        Number++;
+        StateHasChanged();
+    }
+}

@@ -12,7 +12,7 @@ public class AuthorizationDataService : IAuthorizationDataService
         _httpClient = httpClient;
     }
 
-    public async Task Login(LoginRequest request)
+    public async Task<string> Login(LoginRequest request)
     {
         var response = await _httpClient.PostAsJsonAsync($"api/Authorization/login", request);
 
@@ -20,6 +20,10 @@ public class AuthorizationDataService : IAuthorizationDataService
         {
             throw new Exception("Something went wrong");
         }
+
+        var result = await response.Content.ReadAsStringAsync();
+
+        return result ?? "";
     }
 
     public async Task Register(RegisterRequest request)
@@ -30,7 +34,17 @@ public class AuthorizationDataService : IAuthorizationDataService
         {
             throw new Exception("Not registered");
         }
+    }
 
-        //Testing commit
+    public async Task Logout()
+    {
+        HttpContent httpContent = new StringContent(string.Empty);
+
+        var response = await _httpClient.PostAsJsonAsync("api/Authorization/logout", httpContent);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Error while logging out");
+        }
     }
 }

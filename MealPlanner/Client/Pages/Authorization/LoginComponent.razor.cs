@@ -1,14 +1,17 @@
 ﻿using MealPlanner.Client.DataServices.AuthorizationDataService;
+using MealPlanner.Client.Providers;
 using MealPlanner.Shared.DTO.Authorization;
 using Microsoft.AspNetCore.Components;
-using Radzen;
 
 namespace MealPlanner.Client.Pages.Authorization;
 
-partial class Login
+partial class LoginComponent
 {
     [Inject]
     private IAuthorizationDataService AuthorizationDataService { get; set; } = default!;
+
+    [Inject]
+    private JwtAuthenticationStateProvider JwtAuthenticationStateProvider { get; set; } = default!;
 
     private LoginRequest LoginRequest { get; set; } = new LoginRequest();
 
@@ -20,7 +23,9 @@ partial class Login
     {
         try
         {
-            await AuthorizationDataService.Login(LoginRequest);
+            var token = await AuthorizationDataService.Login(LoginRequest);
+
+            JwtAuthenticationStateProvider.Login(token);
         }
         catch (Exception ex)
         {
