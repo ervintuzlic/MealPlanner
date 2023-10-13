@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace MealPlanner.Client.Pages.Authorization;
 
-partial class Login
+partial class LoginComponent
 {
     [Inject]
     private IAuthorizationDataService AuthorizationDataService { get; set; } = default!;

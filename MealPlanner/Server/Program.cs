@@ -1,9 +1,8 @@
 using MealPlanner.Application.Data;
 using MealPlanner.Application.DomainModel;
-using MealPlanner.Infrastructure.Configuration.Authorization;
+using MealPlanner.Common.Authorization;
 using MealPlanner.Infrastructure.Extensions.Authorization;
 using MealPlanner.Server;
-using MealPlanner.Shared.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -42,8 +41,6 @@ public class Program
 
         IConfiguration jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
-        var roleManager = builder.Services.GetRequiredService<RoleManager<IdentityRole>>();
-
         builder.Services
             .AddAuthentication(options =>
             {
@@ -73,11 +70,9 @@ public class Program
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .Build();
 
-            options.RegisterModulePolicies<ModuleCode>(configuration =>
+            options.RegisterModulePolicies(configuration =>
             {
                 configuration.ClaimType = AuthorizationPolicyRegistration.AuthorizationClaimType;
-
-                configuration.AdditionalPolicies = new List<MultiModulePolicy>();
 
                 configuration.AuthenticationScheme = JwtBearerDefaults.AuthenticationScheme;
             });
@@ -87,6 +82,14 @@ public class Program
         builder.Services.AddRazorPages();
 
         var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            context!.Database.EnsureCreatedAsync().GetAwaiter().GetResult();
+
+            SeedData.Seed(context!).GetAwaiter().GetResult();
+        }
 
         if (app.Environment.IsDevelopment())
         {

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MealPlanner.Application", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MealPlanner.Infrastructure", "MealPlanner.Infrastructure\MealPlanner.Infrastructure.csproj", "{1C7ED459-EF5C-44AE-BA9C-244E357534E5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MealPlanner.Common", "MealPlanner.Common\MealPlanner.Common.csproj", "{C1162DA3-41F0-409D-AE56-F5D716A5AAC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1C7ED459-EF5C-44AE-BA9C-244E357534E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C7ED459-EF5C-44AE-BA9C-244E357534E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C7ED459-EF5C-44AE-BA9C-244E357534E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1162DA3-41F0-409D-AE56-F5D716A5AAC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1162DA3-41F0-409D-AE56-F5D716A5AAC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1162DA3-41F0-409D-AE56-F5D716A5AAC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1162DA3-41F0-409D-AE56-F5D716A5AAC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

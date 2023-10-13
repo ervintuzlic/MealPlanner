@@ -1,5 +1,6 @@
 ﻿using MealPlanner.Application.DomainModel;
 using MealPlanner.Application.Services.Authorization;
+using MealPlanner.Common.Authorization;
 using MealPlanner.Shared.DTO.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -146,12 +147,17 @@ public class AuthorizationController : ControllerBase
         var secretkey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
         var credentials = new SigningCredentials(secretkey, SecurityAlgorithms.HmacSha256);
 
+        var roles = await _userManager.GetRolesAsync(user);
+        var role = roles
+            .FirstOrDefault()!
+            .ToString();
+
         var claims = new[]
         {
             new Claim(ClaimTypes.Name, user.UserName!),
             new Claim(JwtRegisteredClaimNames.Email, user.Email!),
             new Claim(JwtRegisteredClaimNames.Jti, user.Id.ToString()),
-            new Claim(Shared.Authorization.AuthorizationPolicyRegistration.AuthorizationClaimType, userRoles)
+            new Claim(AuthorizationPolicyRegistration.AuthorizationClaimType, role)
         };
 
         var token = new JwtSecurityToken(

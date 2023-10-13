@@ -1,7 +1,8 @@
 ﻿ @page "/counter"
 
+@using MealPlanner.Common.Authorization;
 @using Microsoft.AspNetCore.Authorization;
-@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(AuthorizationRoles.Counter)]
 
 <h3>Counter</h3>
 

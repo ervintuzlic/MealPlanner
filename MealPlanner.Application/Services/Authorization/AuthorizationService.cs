@@ -4,12 +4,7 @@ using MealPlanner.Infrastructure.Extensions;
 using MealPlanner.Infrastructure.Security;
 using Microsoft.AspNetCore.Identity;
 using MealPlanner.Application.Data;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualBasic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
+using MealPlanner.Common.Authorization;
 
 namespace MealPlanner.Application.Services.Authorization;
 
@@ -17,11 +12,13 @@ public class AuthorizationService : IAuthorizationService
 {
     private readonly ApplicationDbContext _appContext;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public AuthorizationService(UserManager<ApplicationUser> userManager, ApplicationDbContext appContext)
+    public AuthorizationService(UserManager<ApplicationUser> userManager, ApplicationDbContext appContext, RoleManager<IdentityRole> roleManager)
     {
         _appContext = appContext;
         _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     public async Task<ApplicationUser?> Login(LoginRequest request)
@@ -130,6 +127,7 @@ public class AuthorizationService : IAuthorizationService
             };
 
             await _userManager.CreateAsync(user);
+            await _userManager.AddToRoleAsync(user, AuthorizationRoles.Free);
 
             await _appContext.SaveChangesAsync();
 

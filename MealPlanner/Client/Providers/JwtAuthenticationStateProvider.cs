@@ -1,5 +1,7 @@
 ﻿using MealPlanner.Client.Shared.Models;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace MealPlanner.Client.Providers;
 
@@ -30,8 +32,9 @@ public class JwtAuthenticationStateProvider : AuthenticationStateProvider
     /// <param name="jwt">The JWT token.</param>
     public void Login(string jwt)
     {
-        var principal = JwtSerialize.Deserialize(jwt);
-        _user = new User(principal.Identity.Name, jwt, principal);
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(jwt);
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(token.Claims, "jwt"));
+        _user = new User(principal.Identity!.Name!, jwt, principal);
         NotifyAuthenticationStateChanged(Task.FromResult(GetState()));
     }
 

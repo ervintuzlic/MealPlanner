@@ -7,6 +7,7 @@ public class Encryption
     public byte[] GenerateSalt()
     {
         byte[] salt = new byte[16];
+
         using (var rng = new RNGCryptoServiceProvider())
         {
             rng.GetBytes(salt);

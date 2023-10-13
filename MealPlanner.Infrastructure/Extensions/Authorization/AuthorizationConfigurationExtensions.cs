@@ -1,13 +1,14 @@
-﻿using MealPlanner.Infrastructure.Configuration.Authorization;
+﻿using MealPlanner.Common.Authorization;
+using MealPlanner.Infrastructure.Configuration.Authorization;
 using Microsoft.AspNetCore.Authorization;
 
 namespace MealPlanner.Infrastructure.Extensions.Authorization;
 
 public static class AuthorizationConfigurationExtensions
 {
-    public static void RegisterModulePolicies<T>(this AuthorizationOptions options, Action<AuthorizationConfiguration<T>> configuration) where T : Enum
+    public static void RegisterModulePolicies(this AuthorizationOptions options, Action<AuthorizationConfiguration> configuration)
     { 
-        var config = new AuthorizationConfiguration<T>();
+        var config = new AuthorizationConfiguration();
 
         configuration(config);
 
@@ -15,69 +16,34 @@ public static class AuthorizationConfigurationExtensions
         {
             throw new ArgumentException("Claim Type is not specified");
         }
-        
-        var values = Enum.GetValues(typeof(T));
 
-        foreach(var value in values)
+        var policies = AuthorizationRoles.Policies;
+
+        foreach(var policy in policies)
         {
-            options.AddPolicy(value.ToString()!, RegisterPolicy(config.ClaimType!, value.ToString()!, config.AuthenticationScheme!));
-        }
-
-        if (config.AdditionalPolicies?.Any() == true)
-        {
-            foreach(var policy in config.AdditionalPolicies)
-            {
-                if (policy.PolicyName.IsNullOrWhiteSpace())
-                {
-                    throw new ArgumentException("Module policy is not configured properly");
-                }
-
-                if(policy.ModuleCodes?.Any() == false)
-                {
-                    throw new ArgumentException("There are no module codes for this policy");
-                }
-
-                options.AddPolicy(policy.PolicyName, RegisterMultiModulePolicy(config.ClaimType!, policy, config.AuthenticationScheme!));
-            }
+            options.AddPolicy(policy, RegisterPolicy(config.ClaimType!, policy, config.AuthenticationScheme!));
         }
     }
 
-    private static AuthorizationPolicy RegisterMultiModulePolicy(string claimType, MultiModulePolicy policy, string authenticationScheme)
-    {
-        var authorizationPolicyBuiler = new AuthorizationPolicyBuilder()
-            .RequireAuthenticatedUser()
-            .RequireAssertion(x =>
-            {
-                var listOfModules = policy.ModuleCodes.Select(x => x.ToString()).ToList();
-
-                var hasPolicy = x.User.Claims
-                .Where(x => x.Type == claimType)
-                .SelectMany(c => c.Value.Split(','))
-                .Any(s => listOfModules.Contains(s));
-
-                return hasPolicy;
-            });
-
-        if(!authenticationScheme.IsNullOrWhiteSpace())
-        {
-            authorizationPolicyBuiler.AddAuthenticationSchemes(authenticationScheme);
-        }
-
-        var builder = authorizationPolicyBuiler.Build();
-
-        return builder;
-    }
-
-    private static AuthorizationPolicy RegisterPolicy(string claimType, string module, string authenticationScheme)
+    private static AuthorizationPolicy RegisterPolicy(string claimType, string policy, string authenticationScheme)
     {
         var authorizationPolicyBuilder = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
             .RequireAssertion(x =>
             {
-                var hasPolicy = x.User.Claims
+                var role = x.User.Claims
                     .Where(x => x.Type == claimType)
-                    .SelectMany(x => x.Value.Split(','))
-                    .Any(p => p == module);
+                    .FirstOrDefault()?.Value;
+
+                if (role.IsNullOrWhiteSpace())
+                {
+                    return false;
+                }
+
+                var listOfPoliciesForRole = AuthorizationPolicyRegistration.GetForRole(role!);
+
+                var hasPolicy = listOfPoliciesForRole
+                    .Any(x => x == policy);
 
                 return hasPolicy;
             });

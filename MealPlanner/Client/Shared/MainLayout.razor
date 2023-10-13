@@ -27,7 +27,7 @@
     </RadzenHeader>
     <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
         <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Icon="home" />
+            <RadzenPanelMenuItem Text="Home" Icon="home" Click="args => RedirectToHome()" />
             <RadzenPanelMenuItem Text="Users" Icon="account_box" Click="args => RedirectToCounter()" />
         </RadzenPanelMenu>
         <div class="rz-p-4">
@@ -57,6 +57,7 @@
     private void RedirectToLogin() => NavigationManager.NavigateTo("/login");
     private void RedirectToRegister() => NavigationManager.NavigateTo("/register");
     private void RedirectToCounter() => NavigationManager.NavigateTo("/counter");
+    private void RedirectToHome() => NavigationManager.NavigateTo("/");
 
     private async void Logout()
     {

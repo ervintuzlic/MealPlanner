@@ -2,15 +2,31 @@ using MealPlanner.Client;
 using MealPlanner.Client.Handlers;
 using MealPlanner.Client.Providers;
 using MealPlanner.Client.Shared.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MealPlanner.Infrastructure.Extensions.Authorization;
+using MealPlanner.Common.Authorization;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddAuthorizationCore();
+builder.Services.AddAuthorizationCore(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .AddAuthenticationSchemes("Bearer")
+        .Build();
+
+    options.RegisterModulePolicies(configuration =>
+    {
+        configuration.ClaimType = AuthorizationPolicyRegistration.AuthorizationClaimType;
+
+        configuration.AuthenticationScheme = "Bearer";
+    });
+});
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
