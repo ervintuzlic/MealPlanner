@@ -16,18 +16,16 @@ public class AuthorizationController : ControllerBase
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
 
     internal const string RefreshTokenCookieKey = "cookie";
     internal const string RefreshTokenSessionkey = "session";
 
-    public AuthorizationController(IAuthorizationService authorizationService, IConfiguration configuration, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    public AuthorizationController(IAuthorizationService authorizationService, IConfiguration configuration, UserManager<ApplicationUser> userManager)
     {
         _authorizationService = authorizationService;
         _configuration = configuration;
         _userManager = userManager;
-        _roleManager = roleManager;
     }
 
     [HttpPost("login")]
